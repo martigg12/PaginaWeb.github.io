@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Preguntas y Respuestas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #question-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="question-container">
+    <h1>Juego de Preguntas y Respuestas</h1>
+    <div id="question"></div>
+    <button onclick="checkAnswer(true)">Verdadero</button>
+    <button onclick="checkAnswer(false)">Falso</button>
+    <div id="result"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js"></script>
+
+<script>
+    // Configura tu proyecto de Firebase aquí
+    const firebaseConfig = {
+        apiKey: "TU_API_KEY",
+        authDomain: "TU_DOMINIO.firebaseapp.com",
+        databaseURL: "https://TU_DOMINIO.firebaseio.com",
+        projectId: "TU_PROYECTO_ID",
+        storageBucket: "TU_DOMINIO.appspot.com",
+        messagingSenderId: "TU_MENSAJERÍA_SENDER_ID",
+        appId: "TU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const database = firebase.database();
+    const questionsRef = database.ref('preguntas');
+
+    let currentQuestion = null;
+
+    function loadQuestion() {
+        questionsRef.once('value', (snapshot) => {
+            const questions = snapshot.val();
+            const questionKeys = Object.keys(questions);
+            const randomKey = questionKeys[Math.floor(Math.random() * questionKeys.length)];
+            currentQuestion = questions[randomKey];
+
+            document.getElementById('question').innerText = currentQuestion.text;
+        });
+    }
+
+    function checkAnswer(userAnswer) {
+        if (currentQuestion.correct === userAnswer) {
+            document.getElementById('result').innerText = '¡Correcto!';
+        } else {
+            document.getElementById('result').innerText = 'Incorrecto. La respuesta correcta es ' + (currentQuestion.correct ? 'Verdadero' : 'Falso');
+        }
+
+        // Cargar la siguiente pregunta después de 2 segundos
+        setTimeout(() => {
+            document.getElementById('result').innerText = '';
+            loadQuestion();
+        }, 2000);
+    }
+
+    // Iniciar el juego cargando la primera pregunta
+    loadQuestion();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nombre = $_POST["nombre"];
+    $email = $_POST["email"];
+    $mensaje = $_POST["mensaje"];
+
+    // Configurar el destinatario del correo
+    $destinatario = "tucorreo@example.com";
+
+    // Asunto del correo
+    $asunto = "Nuevo mensaje de contacto de $nombre";
+
+    // Cuerpo del correo
+    $cuerpo = "Nombre: $nombre\n";
+    $cuerpo .= "Correo Electrónico: $email\n";
+    $cuerpo .= "Mensaje:\n$mensaje";
+
+    // Encabezados del correo
+    $headers = "From: $email\r\n";
+
+    // Enviar el correo
+    if (mail($destinatario, $asunto, $cuerpo, $headers)) {
+        echo "¡Mensaje enviado con éxito!";
+    } else {
+        echo "Error al enviar el mensaje.";
+    }
+}
+?>
